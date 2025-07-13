@@ -89,25 +89,30 @@
             window.setTimeout("refreshData()", refreshTime);
         }
 
-        function processForecastWeather(data) {
-            dataTimeZone = data.city.timezone
+function processForecastWeather(data) {
+    dataTimeZone = data.city.timezone;
 
-            for (var i = 0; i < forecastCount; i++) {
-                var forecast = data.list[i];
+    // define custom forecast time points
+    const buckets = [1, 2, 8, 16, 24]; 
+    const labels  = ['+3 h', '+6 h', '+1 d', '+2 d', '+3 d'];
 
-                var feelsLike = tempType == "feelsLike";
+    buckets.forEach((idx, j) => {
+        var forecast = data.list[idx];
+        var feelsLike = (tempType == "feelsLike");
 
-                forecastsCells[i].temp.innerHTML = (feelsLike ? Math.round(forecast.main.feels_like) : Math.round(forecast.main.temp)) + unitsSymbolHtml;
-                forecastsCells[i].icon.className = getIconClassName(forecast.weather[0], new Date(forecast.dt * 1000));
-                forecastsCells[i].desc.innerHTML = forecast.weather[0].description;
-                forecastsCells[i].time.innerHTML = momentWithCorrectUtcOffset(new Date(forecast.dt * 1000)).format(timeFormat);
-                forecastsCells[i].temp.className = feelsLike ? "colTemp feelsLike" : "colTemp";
-                forecastsCells[i].icon.style.transform = null;
-                forecastsCells[i].icon.style.webkitTransform = null;
-            }
+        forecastsCells[j].temp.innerHTML = (feelsLike ? Math.round(forecast.main.feels_like) : Math.round(forecast.main.temp)) + unitsSymbolHtml;
+        forecastsCells[j].icon.className = getIconClassName(forecast.weather[0], new Date(forecast.dt * 1000));
+        forecastsCells[j].desc.innerHTML = forecast.weather[0].description;
+        // display your custom label
+        forecastsCells[j].time.innerHTML = labels[j];
 
-            setMoonIconsRotation(data.city.coord.lat)
-        }
+        forecastsCells[j].temp.className = feelsLike ? "colTemp feelsLike" : "colTemp";
+        forecastsCells[j].icon.style.transform = null;
+        forecastsCells[j].icon.style.webkitTransform = null;
+    });
+
+    setMoonIconsRotation(data.city.coord.lat);
+}
 
         function getIconClassName(weather, date) {
             var isNight = weather.icon.slice(-1) === "n";
@@ -211,7 +216,7 @@
             description.innerHTML = data.weather[0].description;
             lastUpdate.innerHTML = momentWithCorrectUtcOffset(new Date()).format(timeFormat) + "/" + momentWithCorrectUtcOffset(new Date(data.dt * 1000)).format(timeFormat);
 
-            date.innerHTML = momentWithCorrectUtcOffset(new Date()).format("dd, ll");
+            date.innerHTML = momentWithCorrectUtcOffset(new Date()).format("dddd, ll");
 
             var sunrise = momentWithCorrectUtcOffset(new Date(data.sys.sunrise * 1000));
             var sunset = momentWithCorrectUtcOffset(new Date(data.sys.sunset * 1000));
@@ -219,9 +224,9 @@
             _sunriseHour = sunrise.hour();
             _sunsetHour = sunset.hour();
 
-            sun.innerHTML = "<i class='" + getMoonIconClasses(getCurrentMoonPhase(), isNightMode()) + "'></i>&nbsp;&nbsp;<i class='wi wi-sunrise'></i> " + sunrise.format(timeFormat)
-                    + "&nbsp;&nbsp;<i class='wi wi-sunset'></i> " + sunset.format(timeFormat);
-            //  alert(data.name);
+            sun.innerHTML = "<i class='" + getMoonIconClasses(getCurrentMoonPhase(), isNightMode()) + "'></i>&nbsp;&nbsp;<i class='wi wi-sunrise'></i> " + sunrise.format("h:mm A")
+                    + "&nbsp;&nbsp;<i class='wi wi-sunset'></i> " + sunset.format("h:mm A");
+
             setNightMode();
             setMoonIconsRotation(data.coord.lat)
         }
