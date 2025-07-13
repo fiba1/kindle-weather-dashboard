@@ -1,8 +1,14 @@
 var api_locParams = "lat=50.1243111&lon=14.4901953";
 // or api_locParams = "q=Paris";
 var api_appId = "YOUR_API_KEY";
-var api_lang = "sk"
-var api_units = "metric"; 
+var api_lang = "en"
+var api_units = "imperial"; 
+
+var forecast_mode = "mixed";
+
+var hours_ahead = [3, 6];
+
+var days_ahead = 3;
 
 var api_params = null;
 
